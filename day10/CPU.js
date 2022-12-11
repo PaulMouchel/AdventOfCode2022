@@ -4,12 +4,21 @@ export class CPU {
     register
     cycle
     history
+    screen
 
     constructor(instructions) {
         this.register = 1
         this.instructions = instructions.map(instruction => instruction.split(" "))
         this.cycle = 1
         this.history = []
+        this.screen = [
+            new Array(40),
+            new Array(40),
+            new Array(40),
+            new Array(40),
+            new Array(40),
+            new Array(40)
+        ]
     }
 
     executeProgram() {
@@ -22,12 +31,15 @@ export class CPU {
         const [command, arg] = instruction
         if (command === 'noop') {
             this.historize()
+            this.draw()
             this.cycle++
         } else if (command === 'addx') {
             const value = +arg
             this.historize()
+            this.draw()
             this.cycle++
             this.historize()
+            this.draw()
             this.cycle++
             this.register += value
         }
@@ -37,6 +49,26 @@ export class CPU {
         this.history.push({
             cycle: this.cycle,
             register: this.register
+        })
+    }
+
+    draw() {
+        const row = Math.trunc((this.cycle - 1) / 40)
+        const column = (this.cycle - 1) % 40
+        const sprite = this.getSprite()
+        this.screen[row][column] =sprite[column]
+    }
+
+    getSprite() {
+        let emptySprite = ".........." + ".........." + ".........." + ".........."
+        const begin = emptySprite.slice(0, this.register - 1)
+        const end = emptySprite.slice(this.register + 2, 40)
+        return begin + "###" + end
+    }
+
+    display() {
+        this.screen.forEach(line => {
+            console.log(line.join(""))
         })
     }
 
