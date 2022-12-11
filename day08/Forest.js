@@ -66,4 +66,64 @@ export class Forest {
         }
         return true
     }
+
+    getBestScenicScore() {
+        let bestScore = 0
+        for (let row in this.trees) {
+            for (let column in this.trees[row]) {
+                const score = this.getScenicScore(row, column)
+                if (score > bestScore) bestScore = score
+            }
+        }
+        return bestScore
+    }
+
+    getScenicScore(row, column) {
+        const value = +this.trees[row][column]
+        const top = this.countTreesOnTop(row, column, value)
+        const bottom = this.countTreesOnBottom(row, column, value)
+        const left = this.countTreesOnLeft(row, column, value)
+        const right = this.countTreesOnRight(row, column, value)
+        return top * bottom * left * right
+    }
+
+    countTreesOnTop(row, column, value) {
+        if (+row === this.topIndex) return 0
+        let total = 0
+        for (let _row = +row - 1; _row >= this.topIndex; _row--) {
+            total++
+            if (+this.trees[_row][column] >= value) return total
+        }
+        return total
+    }
+
+    countTreesOnLeft(row, column, value) {
+        if (+column === this.leftIndex) return 0
+        let total = 0
+        for (let _column = +column - 1; _column >= this.leftIndex; _column--) {
+            total++
+            if (+this.trees[row][_column] >= value) return total
+        }
+        return total
+    }
+
+    countTreesOnBottom(row, column, value) {
+        if (+row === this.bottomIndex) return 0
+        let total = 0
+        for (let _row = +row + 1; _row <= this.bottomIndex; _row++) {
+            total++
+            if (+this.trees[_row][column] >= value) return total
+        }
+        return total
+    }
+
+    countTreesOnRight(row, column, value) {
+        if (+column === this.rightIndex) return 0
+        let total = 0
+        for (let _column = +column + 1; _column <= this.rightIndex; _column++) {
+            total++
+            if (+this.trees[row][_column] >= value) return total
+        }
+        return total
+    }
 }
